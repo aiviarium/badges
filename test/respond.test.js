@@ -64,3 +64,13 @@ test("facet draws the name as the wordmark", async () => {
   assert.match(body, /viewBox="0 0 254.4 105"/);
   assert.doesNotMatch(await (await get("/crow")).text(), /254.4/);
 });
+
+test("height and gap place the badge in a larger box and are not sent on", async () => {
+  const seen = [];
+  const fetcher = upstream({ label: "CI", message: "passing" }, seen);
+  const body = await (await get("/hatchery/badge/a-b-x?height=56&gap=8&label=CI", fetcher)).text();
+  assert.deepEqual(seen, ["https://img.shields.io/badge/a-b-x.json?label=CI"]);
+  assert.match(body, /^<svg [^>]*height="56" viewBox="0 0 \d+ 56"><svg x="8" y="17" /);
+  assert.equal((await get("/hatchery?height=10")).status, 400);
+  assert.equal((await get("/hatchery?gap=x")).status, 400);
+});

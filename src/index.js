@@ -2,6 +2,8 @@
 //
 //   /<project>                     the project's name, as its wordmark with
 //                                  ?facet
+//
+// ?height=<n> and ?gap=<n> place any badge in a larger transparent box.
 //   /<project>/<shields.io path>   any shields.io badge, drawn in the
 //                                  project's style
 //
@@ -49,6 +51,29 @@ async function shields(path, query, fetcher) {
   }
 }
 
+// Places a badge in a larger transparent box: `height` centres it vertically,
+// `gap` adds space on its left. Both help line badges up beside other images
+// where no CSS is allowed, such as a README heading on GitHub.
+function frame(body, height, gap) {
+  if (height === 22 && gap === 0) return body;
+  const width = Number(body.match(/ width="(\d+)"/)[1]) + gap;
+  const y = (height - 22) / 2;
+  const label = body.match(/aria-label="([^"]*)"/)[1];
+  const inner = body.replace("<svg ", `<svg x="${gap}" y="${y}" `);
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${label}" ` +
+    `width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${inner.trimEnd()}</svg>\n`
+  );
+}
+
+// A whole number from the query between `low` and `high`, or null when it is not.
+function bounded(params, key, fallback, low, high) {
+  if (!params.has(key)) return fallback;
+  const n = Number(params.get(key));
+  params.delete(key);
+  return Number.isInteger(n) && n >= low && n <= high ? n : null;
+}
+
 /** Answers one request. `fetcher` is replaced in tests. */
 export async function respond(request, fetcher = fetch) {
   if (request.method !== "GET" && request.method !== "HEAD") return text("Method not allowed", 405);
@@ -59,11 +84,16 @@ export async function respond(request, fetcher = fetch) {
     return text(`Unknown project. Use one of: ${Object.keys(PROJECTS).join(", ")}`, 404);
   }
   const name = PROJECTS[project].name;
+  // `height`, `gap`, `facet` and `tone` are ours.
+  const height = bounded(url.searchParams, "height", 22, 22, 200);
+  const gap = bounded(url.searchParams, "gap", 0, 0, 64);
+  if (height === null || gap === null) return text("height is 22 to 200 and gap 0 to 64", 400);
+  const out = (body, seconds) => svg(frame(body, height, gap), seconds);
   if (rest.length === 0) {
-    return svg(badge({ project, label: name, facet: url.searchParams.has("facet") }), 86400);
+    return out(badge({ project, label: name, facet: url.searchParams.has("facet") }), 86400);
   }
 
-  // `tone` is ours. shields.io reads the rest of the query, such as `label`.
+  // `tone` is ours too. shields.io reads the rest of the query, such as `label`.
   const tone = url.searchParams.get("tone") ?? project;
   if (!Object.hasOwn(PROJECTS, tone)) return text("Unknown project in tone", 400);
   url.searchParams.delete("tone");
@@ -72,10 +102,10 @@ export async function respond(request, fetcher = fetch) {
 
   const found = await shields(path, query, fetcher);
   if (found === null) {
-    return svg(badge({ project, label: cut(rest[0]), value: "unavailable", muted: true }), 60);
+    return out(badge({ project, label: cut(rest[0]), value: "unavailable", muted: true }), 60);
   }
   const fixedText = rest[0] === "badge" || rest[0] === "static";
-  return svg(
+  return out(
     badge({
       project,
       label: cut(found.label || name),

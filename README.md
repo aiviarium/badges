@@ -17,6 +17,7 @@ https://aiviarium-badges.helight.workers.dev/<project>/<shields.io path>
 | CI | `/hatchery/github/actions/workflow/status/aiviarium/hatchery/ci.yml?label=CI` |
 | License | `/hatchery/github/license/aiviarium/hatchery` |
 | A value on another project's colour | `/aiviarium/badge/Aiviarium-Hatchery-x?tone=hatchery` |
+| A badge centred in a box 56 high, with 8 pixels of space on its left | `/hatchery/github/license/aiviarium/hatchery?height=56&gap=8` |
 
 In Markdown:
 
@@ -26,7 +27,7 @@ In Markdown:
 
 ## Requests
 
-The worker asks shields.io for the JSON form of the badge and draws its label and value. The query string goes to shields.io unchanged, so `label=` and the other shields.io settings work. `tone=<project>` is the exception. It is read here and sets the colour behind the value.
+The worker asks shields.io for the JSON form of the badge and draws its label and value. The query string goes to shields.io unchanged, so `label=` and the other shields.io settings work. The exceptions are read here. `tone=<project>` sets the colour behind the value. `height` and `gap` place the badge in a larger transparent box, which lines it up beside other images where CSS is not allowed, such as a README heading on GitHub.
 
 Colours from shields.io are ignored. A value is on the project's colour, or on grey when it reports a failure, such as a repository that was not found or a failing workflow.
 
