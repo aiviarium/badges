@@ -33,14 +33,14 @@ In Markdown:
 
 The worker asks shields.io for the JSON form of the badge and draws its label and value. The query string goes to shields.io unchanged, so `label=` and the other shields.io settings work. The exceptions are read here: `icon`, `state`, `facet` and `tone`, described below, and `height` and `gap`. `height` and `gap` place the badge in a larger transparent box, which lines it up beside other images where CSS is not allowed, such as a README heading on GitHub.
 
-A value that reports a state gets a dot and the word in the state's colour, on a tint of that colour, as in Nocturne. The worker reads the state from the value first, then from the colour shields.io gives it.
+A value that reports a state gets a dot and the word in the state's colour, on a tint of that colour, as in Nocturne. The worker reads the state from the value. For a share such as coverage, it also reads the colour shields.io gives it.
 
 | State | Colour | Values |
 | --- | --- | --- |
-| `success` | green, with a glow | passing, success, healthy, operational, and green values such as high coverage |
+| `success` | green | passing, success, healthy, operational, and a high share such as coverage |
 | `running` | blue, pulsing | pending, running, in progress, queued |
-| `warning` | amber | yellow and orange values, such as middling coverage |
-| `danger` | red | failing, error, down, and red values |
+| `warning` | amber | a middling share, such as coverage |
+| `danger` | red | failing, error, down, and a low share |
 | `neutral` | grey | cancelled, skipped, no status, not found |
 
 `state=<name>` sets the state by hand, and `state=none` draws the value without one. Any other value, such as a version or a license, is on the project's colour, or on `tone`.

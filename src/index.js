@@ -48,7 +48,9 @@ function stateOf(found) {
   const message = found.message.trim().toLowerCase();
   for (const [state, words] of WORDS) if (words.test(message)) return state;
   if (/not found|no releases|invalid|inaccessible/.test(message)) return "neutral";
-  return COLOURS[found.color] ?? null;
+  // A colour alone says a state only for a share, such as coverage. A license
+  // or a version is coloured too, and is not a state.
+  return /^\d+(\.\d+)?%$/.test(message) ? (COLOURS[found.color] ?? null) : null;
 }
 
 // The icon a request names, or undefined when it names none we know.

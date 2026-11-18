@@ -44,6 +44,14 @@ test("a state is drawn as a dot and a word in its colour", async () => {
   assert.match(missing, /<circle [^>]*fill="#A1A1AA"/);
 });
 
+test("a coloured value that is not a state keeps the project colour", async () => {
+  const license = await (await get("/hatchery/x", upstream({ label: "license", message: "Apache-2.0", color: "green" }))).text();
+  assert.doesNotMatch(license, /<circle/);
+  assert.match(license, /<rect [^>]*fill="#E879F9"/);
+  const coverage = await (await get("/hatchery/x", upstream({ label: "coverage", message: "94%", color: "brightgreen" }))).text();
+  assert.match(coverage, /<circle [^>]*fill="#3FCF8E"/);
+});
+
 test("a value without a state keeps the project colour, and state overrides", async () => {
   const fetcher = upstream({ label: "release", message: "v1.0.0", color: "blue" });
   assert.match(await (await get("/hatchery/x", fetcher)).text(), /<rect [^>]*fill="#E879F9"/);

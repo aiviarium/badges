@@ -14,8 +14,8 @@ const MUTED = "#3A3A42"; // behind a value that has no state and no colour
 // The state colours of Nocturne on a dark ground. A state value is drawn as a
 // dot and a word on a tint of its colour, the way Nocturne shows a state.
 export const STATES = {
-  success: { colour: "#3FCF8E", glow: true },
-  running: { colour: "#5AA9FF", glow: true, pulse: true },
+  success: { colour: "#3FCF8E" },
+  running: { colour: "#5AA9FF", pulse: true },
   warning: { colour: "#F2B33D" },
   danger: { colour: "#FF6369" },
   neutral: { colour: "#A1A1AA" },
@@ -73,18 +73,13 @@ function icon(glyph) {
   );
 }
 
-// A state's dot at x on the middle line: a glow behind it for the states that
-// glow, pulsing while something runs.
+// A state's dot at x on the middle line, pulsing while something runs.
 function dot(state, x) {
-  const { colour, glow, pulse } = STATES[state];
-  const cy = HEIGHT / 2;
+  const { colour, pulse } = STATES[state];
   const animate = pulse
-    ? '<animate attributeName="opacity" values="1;.25;1" dur="1.6s" repeatCount="indefinite"/>'
+    ? '<animate attributeName="opacity" values="1;.3;1" dur="1.6s" repeatCount="indefinite"/>'
     : "";
-  const halo = glow
-    ? `<circle cx="${fixed(x)}" cy="${cy}" r="6" fill="${colour}" opacity=".22">${animate}</circle>`
-    : "";
-  return `${halo}<circle cx="${fixed(x)}" cy="${cy}" r="3" fill="${colour}">${pulse ? animate : ""}</circle>`;
+  return `<circle cx="${fixed(x)}" cy="${HEIGHT / 2}" r="3" fill="${colour}">${animate}</circle>`;
 }
 
 // The size of a wordmark's type. Its outlines are on a 100-unit em in a box
