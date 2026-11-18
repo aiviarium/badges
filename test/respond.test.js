@@ -31,11 +31,43 @@ test("tone picks the colour of the value and is not sent on", async () => {
   assert.match(body, /fill="#8F8FFA"/);
 });
 
-test("a failure reported by shields.io is drawn on grey", async () => {
-  const fetcher = upstream({ label: "release", message: "repo not found", color: "red" });
-  const body = await (await get("/parrot/github/v/release/example/none", fetcher)).text();
-  assert.match(body, /fill="#3A3A42"/);
-  assert.doesNotMatch(body, /<rect[^>]*fill="#FF6369"/);
+test("a state is drawn as a dot and a word in its colour", async () => {
+  const passing = await (await get("/hatchery/github/actions/workflow/status/a/b/ci.yml",
+    upstream({ label: "CI", message: "passing", color: "brightgreen" }))).text();
+  assert.match(passing, /<circle [^>]*fill="#3FCF8E"/);
+  assert.doesNotMatch(passing, /<rect [^>]*fill="#E879F9"/);
+  const failing = await (await get("/hatchery/x", upstream({ label: "CI", message: "failing", color: "red" }))).text();
+  assert.match(failing, /<circle [^>]*fill="#FF6369"/);
+  const running = await (await get("/hatchery/x", upstream({ label: "CI", message: "in progress" }))).text();
+  assert.match(running, /<animate /);
+  const missing = await (await get("/parrot/x", upstream({ label: "release", message: "repo not found", color: "red" }))).text();
+  assert.match(missing, /<circle [^>]*fill="#A1A1AA"/);
+});
+
+test("a value without a state keeps the project colour, and state overrides", async () => {
+  const fetcher = upstream({ label: "release", message: "v1.0.0", color: "blue" });
+  assert.match(await (await get("/hatchery/x", fetcher)).text(), /<rect [^>]*fill="#E879F9"/);
+  const forced = await (await get("/hatchery/badge/a-b-x?state=warning", upstream({ label: "a", message: "b" }))).text();
+  assert.match(forced, /<circle [^>]*fill="#F2B33D"/);
+  const none = await (await get("/hatchery/x?state=none", upstream({ label: "CI", message: "passing" }))).text();
+  assert.doesNotMatch(none, /<circle/);
+  assert.equal((await get("/hatchery/x?state=shiny", fetcher)).status, 400);
+});
+
+test("icon picks another icon or none and is not sent on", async () => {
+  const seen = [];
+  const fetcher = upstream({ label: "license", message: "MIT" }, seen);
+  const lucide = await (await get("/crow/github/license/a/b?icon=lucide:scale", fetcher)).text();
+  assert.deepEqual(seen, ["https://img.shields.io/github/license/a/b.json"]);
+  assert.match(lucide, /color="#8F8FFA" stroke="currentColor"/);
+  const none = await (await get("/crow?icon=none")).text();
+  assert.doesNotMatch(none, /<svg x=/);
+  const other = await (await get("/crow?icon=hatchery")).text();
+  assert.match(other, /#E879F9/);
+  const logo = await get("/crow?icon=si:rust", async () => new Response('<svg viewBox="0 0 24 24"><path d="M1 1h22v22H1z"/></svg>'));
+  assert.match(await logo.text(), /<path fill="#8F8FFA" d="M1 1h22v22H1z"/);
+  assert.equal((await get("/crow?icon=lucide:nope")).status, 400);
+  assert.equal((await get("/crow?icon=si:../x")).status, 400);
 });
 
 test("an unreachable shields.io gives a short-lived badge", async () => {

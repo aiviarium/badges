@@ -18,6 +18,10 @@ https://aiviarium-badges.helight.workers.dev/<project>/<shields.io path>
 | License | `/hatchery/github/license/aiviarium/hatchery` |
 | A value on another project's colour | `/aiviarium/badge/Aiviarium-Hatchery-x?tone=hatchery` |
 | A badge centred in a box 56 high, with 8 pixels of space on its left | `/hatchery/github/license/aiviarium/hatchery?height=56&gap=8` |
+| A Lucide icon instead of the project's | `/hatchery/github/license/aiviarium/hatchery?icon=lucide:scale` |
+| A brand logo from Simple Icons | `/hatchery/badge/rust-1.95-x?icon=si:rust` |
+| No icon | `/hatchery/github/license/aiviarium/hatchery?icon=none` |
+| A state chosen by hand | `/hatchery/badge/hosts-4%20online-x?state=success` |
 
 In Markdown:
 
@@ -27,9 +31,21 @@ In Markdown:
 
 ## Requests
 
-The worker asks shields.io for the JSON form of the badge and draws its label and value. The query string goes to shields.io unchanged, so `label=` and the other shields.io settings work. The exceptions are read here. `tone=<project>` sets the colour behind the value. `height` and `gap` place the badge in a larger transparent box, which lines it up beside other images where CSS is not allowed, such as a README heading on GitHub.
+The worker asks shields.io for the JSON form of the badge and draws its label and value. The query string goes to shields.io unchanged, so `label=` and the other shields.io settings work. The exceptions are read here: `icon`, `state`, `facet` and `tone`, described below, and `height` and `gap`. `height` and `gap` place the badge in a larger transparent box, which lines it up beside other images where CSS is not allowed, such as a README heading on GitHub.
 
-Colours from shields.io are ignored. A value is on the project's colour, or on grey when it reports a failure, such as a repository that was not found or a failing workflow.
+A value that reports a state gets a dot and the word in the state's colour, on a tint of that colour, as in Nocturne. The worker reads the state from the value first, then from the colour shields.io gives it.
+
+| State | Colour | Values |
+| --- | --- | --- |
+| `success` | green, with a glow | passing, success, healthy, operational, and green values such as high coverage |
+| `running` | blue, pulsing | pending, running, in progress, queued |
+| `warning` | amber | yellow and orange values, such as middling coverage |
+| `danger` | red | failing, error, down, and red values |
+| `neutral` | grey | cancelled, skipped, no status, not found |
+
+`state=<name>` sets the state by hand, and `state=none` draws the value without one. Any other value, such as a version or a license, is on the project's colour, or on `tone`.
+
+`icon` sets the icon at the left. It takes another project's slug, `lucide:<name>` for any [Lucide](https://lucide.dev/icons) icon, `si:<slug>` for a logo from [Simple Icons](https://simpleicons.org), or `none`. Lucide icons and logos are drawn in the project's colour.
 
 Answers are cached for five minutes, and badges with fixed text for a day. When shields.io cannot be reached, the value reads `unavailable` for a minute.
 
@@ -71,4 +87,4 @@ The worker doesn't use credentials, and this repository doesn't store any.
 
 ## License
 
-The code is under either of [Apache-2.0](LICENSE-APACHE) or [MIT](LICENSE-MIT), at your option. Inter is under the [SIL Open Font License](assets/inter-OFL.txt). The wordmarks are outlines of Bricolage Grotesque, which is under [the same license](assets/bricolage-grotesque-OFL.txt).
+The code is under either of [Apache-2.0](LICENSE-APACHE) or [MIT](LICENSE-MIT), at your option. Inter is under the [SIL Open Font License](assets/inter-OFL.txt). The Lucide icons are under the ISC license. The wordmarks are outlines of Bricolage Grotesque, which is under [the same license](assets/bricolage-grotesque-OFL.txt).

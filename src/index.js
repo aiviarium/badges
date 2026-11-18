@@ -2,21 +2,79 @@
 //
 //   /<project>                     the project's name, as its wordmark with
 //                                  ?facet
-//
-// ?height=<n> and ?gap=<n> place any badge in a larger transparent box.
 //   /<project>/<shields.io path>   any shields.io badge, drawn in the
 //                                  project's style
 //
+// Our own query parameters, which are not sent on to shields.io:
+//   icon=<project>|lucide:<name>|si:<slug>|none   the icon at the left
+//   state=auto|success|running|warning|danger|neutral|none
+//   tone=<project>                 the colour behind a value without a state
+//   height=<n>, gap=<n>            a larger transparent box around the badge
+//
 // The label and the value come from the JSON form of the shields.io badge, so
 // every badge shields.io offers works and no credentials are stored here.
-import { badge, PROJECTS } from "./badge.js";
+import { badge, LUCIDE, PROJECTS, STATES } from "./badge.js";
 
 const SHIELDS = "https://img.shields.io";
 const README = "https://github.com/aiviarium/badges#readme";
 // Text longer than this is cut, so that a request cannot ask for a huge image.
 const LONGEST = 64;
-// shields.io reports a failure with one of these colours.
-const FAILURE = new Set(["red", "critical", "lightgrey", "lightgray", "inactive"]);
+// Simple Icons, for `icon=si:<slug>`, at a fixed version.
+const SIMPLE_ICONS = "https://cdn.jsdelivr.net/npm/simple-icons@16.38.0/icons";
+
+// What a shields.io value says about a state. The words come first, since the
+// colour of a value means different things on different badges.
+const WORDS = [
+  ["success", /^(passing|passed|success|succeeded|ok|up|healthy|online|operational|stable)$/],
+  ["running", /^(pending|running|in progress|queued|waiting|building|started|requested)$/],
+  ["danger", /^(failing|failed|failure|error|errored|broken|down|offline|critical|timed out)$/],
+  ["neutral", /^(cancelled|canceled|skipped|no status|unknown|inactive|not found|neutral|stale)$/],
+];
+const COLOURS = {
+  brightgreen: "success",
+  green: "success",
+  success: "success",
+  yellowgreen: "warning",
+  yellow: "warning",
+  orange: "warning",
+  important: "warning",
+  red: "danger",
+  critical: "danger",
+};
+// shields.io reports a badge it cannot fill with one of these colours.
+const UNAVAILABLE = new Set(["lightgrey", "lightgray", "inactive"]);
+
+function stateOf(found) {
+  const message = found.message.trim().toLowerCase();
+  for (const [state, words] of WORDS) if (words.test(message)) return state;
+  if (/not found|no releases|invalid|inaccessible/.test(message)) return "neutral";
+  return COLOURS[found.color] ?? null;
+}
+
+// The icon a request names, or undefined when it names none we know.
+async function glyphOf(param, project, fetcher) {
+  if (param === null) return { project };
+  if (param === "none") return null;
+  if (Object.hasOwn(PROJECTS, param)) return { project: param };
+  const colour = PROJECTS[project].colour;
+  const [kind, name] = param.split(":");
+  if (kind === "lucide" && Object.hasOwn(LUCIDE, name)) return { lucide: name, colour };
+  if (kind === "si" && /^[a-z0-9]+$/.test(name ?? "")) {
+    try {
+      const response = await fetcher(`${SIMPLE_ICONS}/${name}.svg`, {
+        cf: { cacheTtl: 86400, cacheEverything: true },
+      });
+      if (!response.ok) return undefined;
+      const source = await response.text();
+      const path = source.match(/<path d="([^"]+)"/)?.[1];
+      const viewBox = source.match(/viewBox="([^"]+)"/)?.[1];
+      if (path && viewBox && /^[\d\s.eE+-]+$/.test(viewBox) && /^[\w\s.,+-]+$/.test(path)) {
+        return { path, viewBox, colour };
+      }
+    } catch {}
+  }
+  return undefined;
+}
 
 const cut = (text) => {
   const chars = [...String(text)];
@@ -89,8 +147,20 @@ export async function respond(request, fetcher = fetch) {
   const gap = bounded(url.searchParams, "gap", 0, 0, 64);
   if (height === null || gap === null) return text("height is 22 to 200 and gap 0 to 64", 400);
   const out = (body, seconds) => svg(frame(body, height, gap), seconds);
-  if (rest.length === 0) {
-    return out(badge({ project, label: name, facet: url.searchParams.has("facet") }), 86400);
+  const iconParam = url.searchParams.get("icon");
+  url.searchParams.delete("icon");
+  const glyph = await glyphOf(iconParam, project, fetcher);
+  if (glyph === undefined) {
+    return text("icon is a project, lucide:<name>, si:<slug> or none", 400);
+  }
+  const facet = url.searchParams.has("facet");
+  url.searchParams.delete("facet");
+  if (rest.length === 0) return out(badge({ project, label: name, facet, glyph }), 86400);
+
+  const stateParam = url.searchParams.get("state") ?? "auto";
+  url.searchParams.delete("state");
+  if (!["auto", "none", ...Object.keys(STATES)].includes(stateParam)) {
+    return text(`state is auto, none or one of: ${Object.keys(STATES).join(", ")}`, 400);
   }
 
   // `tone` is ours too. shields.io reads the rest of the query, such as `label`.
@@ -102,7 +172,10 @@ export async function respond(request, fetcher = fetch) {
 
   const found = await shields(path, query, fetcher);
   if (found === null) {
-    return out(badge({ project, label: cut(rest[0]), value: "unavailable", muted: true }), 60);
+    return out(
+      badge({ project, label: cut(rest[0]), value: "unavailable", glyph, state: "neutral" }),
+      60,
+    );
   }
   const fixedText = rest[0] === "badge" || rest[0] === "static";
   return out(
@@ -111,7 +184,9 @@ export async function respond(request, fetcher = fetch) {
       label: cut(found.label || name),
       value: cut(found.message),
       tone,
-      muted: FAILURE.has(found.color),
+      glyph,
+      state: stateParam === "auto" ? stateOf(found) : stateParam === "none" ? null : stateParam,
+      muted: UNAVAILABLE.has(found.color),
     }),
     fixedText ? 86400 : 300,
   );

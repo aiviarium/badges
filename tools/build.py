@@ -72,9 +72,24 @@ def project(slug, entry):
     return out
 
 
+def lucide():
+    """The inner markup of every Lucide icon, by name, from the lucide-static package."""
+    folder = ROOT / "node_modules" / "lucide-static" / "icons"
+    if not folder.is_dir():
+        raise SystemExit("run npm install first: tools/build.py reads node_modules/lucide-static")
+    icons = {}
+    for path in sorted(folder.glob("*.svg")):
+        source = path.read_text()
+        body = source.split(">", 2)[2] if source.startswith("<!--") else source.split(">", 1)[1]
+        body = body.rsplit("</svg>", 1)[0]
+        icons[path.stem] = re.sub(r"\s*/>", "/>", re.sub(r">\s+<", "><", body)).strip()
+    return icons
+
+
 projects = json.loads((ROOT / "projects.json").read_text())
 data = {
     "glyphs": {str(weight): glyphs(weight) for weight in WEIGHTS},
     "projects": {slug: project(slug, entry) for slug, entry in projects.items()},
+    "lucide": lucide(),
 }
 (ROOT / "src" / "data.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n")
