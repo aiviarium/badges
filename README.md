@@ -34,6 +34,18 @@ Answers are cached for five minutes, and badges with fixed text for a day. When 
 
 The text is drawn as outlines of Inter. A badge looks the same wherever it is shown. Where the worker has no outline for a character, it draws a question mark.
 
+## Your own projects
+
+The worker draws the projects listed in `projects.json`. To run it for other projects, fork this repository and:
+
+1. List your projects in `projects.json`. Each one has a lowercase slug as its key, a `name`, a `colour` as `#RRGGBB` and an `icon`. A `wordmark` is optional, and without one `?facet` draws the name in Inter.
+2. Put the icons and wordmarks under `assets/`. Icons are SVGs with a square viewBox. Wordmarks need a viewBox 105 high with the baseline at 80.
+3. Run `tools/build.py` to write `src/data.json`.
+4. Set your worker's name in `cloudflare.config.ts` and the address the root redirects to in `src/index.js`.
+5. Deploy it with `npx cf deploy`. A free Cloudflare account is enough.
+
+The icons and wordmarks in `assets/` belong to Aiviarium. Replace them in a fork.
+
 ## Work on it
 
 ```bash
@@ -47,11 +59,12 @@ npx cf deploy     # needs a Cloudflare login: npx cf auth login
 | --- | --- |
 | `src/index.js` | The routes, the request to shields.io and the cache |
 | `src/badge.js` | The drawing |
-| `src/data.json` | The outlines of the characters and the icons. `tools/build.py` writes it |
+| `projects.json` | The projects, with their names, colours, icons and wordmarks |
+| `src/data.json` | The projects and the outlines of the characters. `tools/build.py` writes it |
 | `assets/` | Inter with its license, the icons and the wordmarks |
 | `cloudflare.config.ts` | The name and settings of the worker |
 
-Run `tools/build.py` after a change to an icon, a wordmark or the font. It needs Python with `fonttools` and `brotli`.
+Run `tools/build.py` after a change to `projects.json`, an icon, a wordmark or the font. It needs Python with `fonttools` and `brotli`.
 
 The worker doesn't use credentials, and this repository doesn't store any.
 

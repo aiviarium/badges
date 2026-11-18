@@ -7,7 +7,7 @@
 //
 // The label and the value come from the JSON form of the shields.io badge, so
 // every badge shields.io offers works and no credentials are stored here.
-import { badge, COLOURS } from "./badge.js";
+import { badge, PROJECTS } from "./badge.js";
 
 const SHIELDS = "https://img.shields.io";
 const README = "https://github.com/aiviarium/badges#readme";
@@ -55,17 +55,17 @@ export async function respond(request, fetcher = fetch) {
   const url = new URL(request.url);
   const [project, ...rest] = url.pathname.split("/").filter(Boolean);
   if (project === undefined) return Response.redirect(README, 302);
-  if (!Object.hasOwn(COLOURS, project)) {
-    return text(`Unknown project. Use one of: ${Object.keys(COLOURS).join(", ")}`, 404);
+  if (!Object.hasOwn(PROJECTS, project)) {
+    return text(`Unknown project. Use one of: ${Object.keys(PROJECTS).join(", ")}`, 404);
   }
-  const name = project[0].toUpperCase() + project.slice(1);
+  const name = PROJECTS[project].name;
   if (rest.length === 0) {
     return svg(badge({ project, label: name, facet: url.searchParams.has("facet") }), 86400);
   }
 
   // `tone` is ours. shields.io reads the rest of the query, such as `label`.
   const tone = url.searchParams.get("tone") ?? project;
-  if (!Object.hasOwn(COLOURS, tone)) return text("Unknown project in tone", 400);
+  if (!Object.hasOwn(PROJECTS, tone)) return text("Unknown project in tone", 400);
   url.searchParams.delete("tone");
   const query = url.searchParams.size ? `?${url.searchParams}` : "";
   const path = rest.join("/").replace(/\.(svg|json|png)$/, "");

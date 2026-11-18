@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Write src/data.json: the outlines of Inter and the icons the worker draws.
+"""Write src/data.json: the projects of projects.json and the outlines of Inter.
 
 The worker has no font at run time. This script reads assets/inter.woff2 and
 stores each character as a path at the size of the badge text, with its
-advance. Run it after a change to the font, the icons or the constants here.
-Needs fonttools and brotli.
+advance. It also reads each project's colour, icon and wordmark. Run it after
+a change to projects.json, the assets or the constants here. Needs fonttools
+and brotli.
 """
 import json
 import re
@@ -20,7 +21,6 @@ SIZE = 11.5
 # Label, value.
 WEIGHTS = (600, 650)
 CHARS = [chr(c) for c in range(32, 127)] + [chr(c) for c in range(161, 256)] + list("–—…·•↑↓→✓✗€")
-PROJECTS = ("aiviarium", "rookery", "parrot", "crow", "hatchery")
 
 
 def number(value):
@@ -43,8 +43,8 @@ def glyphs(weight):
     return table
 
 
-def icon(project):
-    source = (ROOT / "assets" / "icons" / f"{project}-icon.svg").read_text()
+def icon(path):
+    source = (ROOT / path).read_text()
     body = source.split(">", 1)[1].rsplit("</svg>", 1)[0]
     return {
         "viewBox": re.search(r'viewBox="([^"]+)"', source).group(1),
@@ -52,17 +52,29 @@ def icon(project):
     }
 
 
-def wordmark(project):
-    source = (ROOT / "assets" / "wordmarks" / f"{project}.svg").read_text()
+def wordmark(path):
+    """A wordmark on a 100-unit em: a viewBox 105 high with the baseline at 80."""
+    source = (ROOT / path).read_text()
     return {
         "width": float(re.search(r'viewBox="0 0 ([\d.]+) 105"', source).group(1)),
         "body": source.split(">", 1)[1].rsplit("</svg>", 1)[0].strip(),
     }
 
 
+def project(slug, entry):
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", slug):
+        raise SystemExit(f"projects.json: {slug!r} is not a lowercase slug")
+    if not re.fullmatch(r"#[0-9A-Fa-f]{6}", entry["colour"]):
+        raise SystemExit(f"projects.json: the colour of {slug} is not #RRGGBB")
+    out = {"name": entry["name"], "colour": entry["colour"], "icon": icon(entry["icon"])}
+    if entry.get("wordmark"):
+        out["wordmark"] = wordmark(entry["wordmark"])
+    return out
+
+
+projects = json.loads((ROOT / "projects.json").read_text())
 data = {
     "glyphs": {str(weight): glyphs(weight) for weight in WEIGHTS},
-    "icons": {project: icon(project) for project in PROJECTS},
-    "wordmarks": {project: wordmark(project) for project in PROJECTS},
+    "projects": {slug: project(slug, entry) for slug, entry in projects.items()},
 }
 (ROOT / "src" / "data.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n")

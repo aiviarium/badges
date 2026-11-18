@@ -1,0 +1,7 @@
+{
+  "aiviarium": { "name": "Aiviarium", "colour": "#3FCF8E", "icon": "assets/icons/aiviarium-icon.svg", "wordmark": "assets/wordmarks/aiviarium.svg" },
+  "rookery": { "name": "Rookery", "colour": "#F2B33D", "icon": "assets/icons/rookery-icon.svg", "wordmark": "assets/wordmarks/rookery.svg" },
+  "parrot": { "name": "Parrot", "colour": "#FF6369", "icon": "assets/icons/parrot-icon.svg", "wordmark": "assets/wordmarks/parrot.svg" },
+  "crow": { "name": "Crow", "colour": "#8F8FFA", "icon": "assets/icons/crow-icon.svg", "wordmark": "assets/wordmarks/crow.svg" },
+  "hatchery": { "name": "Hatchery", "colour": "#E879F9", "icon": "assets/icons/hatchery-icon.svg", "wordmark": "assets/wordmarks/hatchery.svg" }
+}

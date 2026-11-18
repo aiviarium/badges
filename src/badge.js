@@ -2,14 +2,8 @@
 // looks the same wherever it is shown.
 import data from "./data.json" with { type: "json" };
 
-// The base colour of each project on a dark background.
-export const COLOURS = {
-  aiviarium: "#3FCF8E",
-  rookery: "#F2B33D",
-  parrot: "#FF6369",
-  crow: "#8F8FFA",
-  hatchery: "#E879F9",
-};
+// The projects of projects.json, by slug.
+export const PROJECTS = data.projects;
 
 const FIELD = "#18181B"; // behind the label
 const LINE = "#2A2A30"; // the outline, which keeps the badge visible on a dark page
@@ -42,7 +36,7 @@ function outline(text, weight, x, colour) {
 }
 
 function icon(project) {
-  const { viewBox, body } = data.icons[project];
+  const { viewBox, body } = PROJECTS[project].icon;
   const y = (HEIGHT - ICON) / 2;
   return `<svg x="${PAD - 1}" y="${y}" width="${ICON}" height="${ICON}" viewBox="${viewBox}">${body}</svg>`;
 }
@@ -53,7 +47,7 @@ const WORDMARK = 12.5;
 
 // The project's wordmark, with its lit facets, starting at x.
 function wordmark(project, x) {
-  const { width, body } = data.wordmarks[project];
+  const { width, body } = PROJECTS[project].wordmark;
   const scale = WORDMARK / 100;
   const y = BASELINE - 80 * scale;
   return [
@@ -65,14 +59,17 @@ function wordmark(project, x) {
 /**
  * A badge with the project's icon and a label on a dark field. With a value,
  * the value is on the colour of `tone`, or on grey when `muted` is set. With
- * `facet`, a badge of the project's name alone shows its wordmark.
+ * `facet`, a badge of the project's name alone shows its wordmark, when the
+ * project has one.
  */
 export function badge({ project, label, value = null, tone = project, muted = false, facet = false }) {
   const alone = value === null;
   let x = PAD - 1 + ICON + 5;
   let labelPath;
   [labelPath, x] =
-    alone && facet ? wordmark(project, x) : outline(label, 600, x, alone ? COLOURS[project] : LABEL);
+    alone && facet && PROJECTS[project].wordmark
+      ? wordmark(project, x)
+      : outline(label, 600, x, alone ? PROJECTS[project].colour : LABEL);
   const split = x + PAD;
   const parts = [`<rect width="${fixed(split)}" height="${HEIGHT}" fill="${FIELD}"/>`];
   let width = split;
@@ -80,7 +77,7 @@ export function badge({ project, label, value = null, tone = project, muted = fa
     const [valuePath, end] = outline(value, 650, split + PAD, muted ? LABEL : VALUE);
     width = end + PAD;
     parts.push(
-      `<rect x="${fixed(split)}" width="${fixed(width - split)}" height="${HEIGHT}" fill="${muted ? MUTED : COLOURS[tone]}"/>`,
+      `<rect x="${fixed(split)}" width="${fixed(width - split)}" height="${HEIGHT}" fill="${muted ? MUTED : PROJECTS[tone].colour}"/>`,
       valuePath,
     );
   }
