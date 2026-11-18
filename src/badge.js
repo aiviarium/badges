@@ -143,7 +143,6 @@ export function badge({
     parts.push(
       `<rect x="${fixed(split)}" width="${w}" height="${HEIGHT}" fill="${FIELD}"/>`,
       `<rect x="${fixed(split)}" width="${w}" height="${HEIGHT}" fill="${colour}" opacity=".14"/>`,
-      `<rect x="${fixed(split)}" width="1" height="${HEIGHT}" fill="${colour}" opacity=".35"/>`,
       dot(state, split + PAD + 3),
       valuePath,
     );
