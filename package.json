@@ -1,5 +1,5 @@
 {
-  "name": "aiviarium-badges",
+  "name": "@aiviarium/badges",
   "private": true,
   "type": "module",
   "license": "MIT OR Apache-2.0",
