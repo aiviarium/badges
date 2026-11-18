@@ -1,6 +1,6 @@
 # Badges
 
-The badge endpoint of Aiviarium. It draws a badge with a project's icon and colour, and takes the text from [shields.io](https://shields.io). Every badge shields.io offers works here.
+The badge endpoint of Aiviarium. It draws a badge in a project's colour, and takes the text from [shields.io](https://shields.io). Every badge shields.io offers works here.
 
 ```text
 https://aiviarium-badges.helight.workers.dev/<project>/<shields.io path>
@@ -18,9 +18,9 @@ https://aiviarium-badges.helight.workers.dev/<project>/<shields.io path>
 | License | `/hatchery/github/license/aiviarium/hatchery` |
 | A value on another project's colour | `/aiviarium/badge/Aiviarium-Hatchery-x?tone=hatchery` |
 | A badge centred in a box 56 high, with 8 pixels of space on its left | `/hatchery/github/license/aiviarium/hatchery?height=56&gap=8` |
-| A Lucide icon instead of the project's | `/hatchery/github/license/aiviarium/hatchery?icon=lucide:scale` |
+| A Lucide icon | `/hatchery/github/license/aiviarium/hatchery?icon=lucide:scale` |
 | A brand logo from Simple Icons | `/hatchery/badge/rust-1.95-x?icon=si:rust` |
-| No icon | `/hatchery/github/license/aiviarium/hatchery?icon=none` |
+| The name badge without its icon | `/hatchery?icon=none` |
 | A state chosen by hand | `/hatchery/badge/hosts-4%20online-x?state=success` |
 
 In Markdown:
@@ -45,7 +45,7 @@ A value that reports a state gets a dot and the word in the state's colour, on a
 
 `state=<name>` sets the state by hand, and `state=none` draws the value without one. Any other value, such as a version or a license, is on the project's colour, or on `tone`.
 
-`icon` sets the icon at the left. It takes another project's slug, `lucide:<name>` for any [Lucide](https://lucide.dev/icons) icon, `si:<slug>` for a logo from [Simple Icons](https://simpleicons.org), or `none`. Lucide icons and logos are drawn in the project's colour.
+`icon` sets the icon at the left. The name badge has the project's icon and the other badges have none unless `icon` names one. It takes another project's slug, `lucide:<name>` for any [Lucide](https://lucide.dev/icons) icon, `si:<slug>` for a logo from [Simple Icons](https://simpleicons.org), or `none`. Lucide icons and logos are drawn in the project's colour.
 
 Answers are cached for five minutes, and badges with fixed text for a day. When shields.io cannot be reached, the value reads `unavailable` for a minute.
 

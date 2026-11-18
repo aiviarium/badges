@@ -62,6 +62,13 @@ test("a value without a state keeps the project colour, and state overrides", as
   assert.equal((await get("/hatchery/x?state=shiny", fetcher)).status, 400);
 });
 
+test("only the name badge has the project's icon by default", async () => {
+  const fetcher = upstream({ label: "license", message: "MIT" });
+  assert.match(await (await get("/crow")).text(), /<svg x=/);
+  assert.doesNotMatch(await (await get("/crow/github/license/a/b", fetcher)).text(), /<svg x=/);
+  assert.match(await (await get("/crow/github/license/a/b?icon=crow", fetcher)).text(), /<svg x=/);
+});
+
 test("icon picks another icon or none and is not sent on", async () => {
   const seen = [];
   const fetcher = upstream({ label: "license", message: "MIT" }, seen);

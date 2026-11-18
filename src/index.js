@@ -6,7 +6,9 @@
 //                                  project's style
 //
 // Our own query parameters, which are not sent on to shields.io:
-//   icon=<project>|lucide:<name>|si:<slug>|none   the icon at the left
+//   icon=<project>|lucide:<name>|si:<slug>|none   the icon at the left; by
+//                                  default the project's on the name badge
+//                                  and none on the others
 //   state=auto|success|running|warning|danger|neutral|none
 //   tone=<project>                 the colour behind a value without a state
 //   height=<n>, gap=<n>            a larger transparent box around the badge
@@ -54,8 +56,9 @@ function stateOf(found) {
 }
 
 // The icon a request names, or undefined when it names none we know.
-async function glyphOf(param, project, fetcher) {
-  if (param === null) return { project };
+// The name badge has the project's icon by default, other badges none.
+async function glyphOf(param, project, named, fetcher) {
+  if (param === null) return named ? { project } : null;
   if (param === "none") return null;
   if (Object.hasOwn(PROJECTS, param)) return { project: param };
   const colour = PROJECTS[project].colour;
@@ -151,7 +154,7 @@ export async function respond(request, fetcher = fetch) {
   const out = (body, seconds) => svg(frame(body, height, gap), seconds);
   const iconParam = url.searchParams.get("icon");
   url.searchParams.delete("icon");
-  const glyph = await glyphOf(iconParam, project, fetcher);
+  const glyph = await glyphOf(iconParam, project, rest.length === 0, fetcher);
   if (glyph === undefined) {
     return text("icon is a project, lucide:<name>, si:<slug> or none", 400);
   }
