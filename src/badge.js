@@ -55,7 +55,7 @@ export function badge({ project, label, value = null, tone = project, muted = fa
   const alone = value === null;
   let x = PAD - 1 + ICON + 5;
   let labelPath;
-  [labelPath, x] = outline(label, alone ? 600 : 500, x, alone ? COLOURS[project] : LABEL);
+  [labelPath, x] = outline(label, 600, x, alone ? COLOURS[project] : LABEL);
   const split = x + PAD;
   const parts = [`<rect width="${fixed(split)}" height="${HEIGHT}" fill="${FIELD}"/>`];
   let width = split;

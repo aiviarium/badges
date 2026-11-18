@@ -17,8 +17,8 @@ from fontTools.varLib.instancer import instantiateVariableFont
 
 ROOT = Path(__file__).resolve().parents[1]
 SIZE = 11.5
-# Label beside a value, label alone, value.
-WEIGHTS = (500, 600, 650)
+# Label, value.
+WEIGHTS = (600, 650)
 CHARS = [chr(c) for c in range(32, 127)] + [chr(c) for c in range(161, 256)] + list("–—…·•↑↓→✓✗€")
 PROJECTS = ("aiviarium", "rookery", "parrot", "crow", "hatchery")
 
