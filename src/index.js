@@ -1,6 +1,7 @@
 // The badge endpoint.
 //
-//   /<project>                     the project's name
+//   /<project>                     the project's name, as its wordmark with
+//                                  ?facet
 //   /<project>/<shields.io path>   any shields.io badge, drawn in the
 //                                  project's style
 //
@@ -58,7 +59,9 @@ export async function respond(request, fetcher = fetch) {
     return text(`Unknown project. Use one of: ${Object.keys(COLOURS).join(", ")}`, 404);
   }
   const name = project[0].toUpperCase() + project.slice(1);
-  if (rest.length === 0) return svg(badge({ project, label: name }), 86400);
+  if (rest.length === 0) {
+    return svg(badge({ project, label: name, facet: url.searchParams.has("facet") }), 86400);
+  }
 
   // `tone` is ours. shields.io reads the rest of the query, such as `label`.
   const tone = url.searchParams.get("tone") ?? project;

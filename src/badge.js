@@ -47,15 +47,32 @@ function icon(project) {
   return `<svg x="${PAD - 1}" y="${y}" width="${ICON}" height="${ICON}" viewBox="${viewBox}">${body}</svg>`;
 }
 
+// The size of a wordmark's type. Its outlines are on a 100-unit em in a box
+// 105 high, with the baseline 80 below the top.
+const WORDMARK = 12.5;
+
+// The project's wordmark, with its lit facets, starting at x.
+function wordmark(project, x) {
+  const { width, body } = data.wordmarks[project];
+  const scale = WORDMARK / 100;
+  const y = BASELINE - 80 * scale;
+  return [
+    `<svg x="${fixed(x)}" y="${fixed(y)}" width="${fixed(width * scale)}" height="${fixed(105 * scale)}" viewBox="0 0 ${width} 105">${body}</svg>`,
+    x + width * scale,
+  ];
+}
+
 /**
  * A badge with the project's icon and a label on a dark field. With a value,
- * the value is on the colour of `tone`, or on grey when `muted` is set.
+ * the value is on the colour of `tone`, or on grey when `muted` is set. With
+ * `facet`, a badge of the project's name alone shows its wordmark.
  */
-export function badge({ project, label, value = null, tone = project, muted = false }) {
+export function badge({ project, label, value = null, tone = project, muted = false, facet = false }) {
   const alone = value === null;
   let x = PAD - 1 + ICON + 5;
   let labelPath;
-  [labelPath, x] = outline(label, 600, x, alone ? COLOURS[project] : LABEL);
+  [labelPath, x] =
+    alone && facet ? wordmark(project, x) : outline(label, 600, x, alone ? COLOURS[project] : LABEL);
   const split = x + PAD;
   const parts = [`<rect width="${fixed(split)}" height="${HEIGHT}" fill="${FIELD}"/>`];
   let width = split;

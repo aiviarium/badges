@@ -57,3 +57,10 @@ test("an unknown project is refused", async () => {
   assert.equal((await get("/crow/badge/a-b-x?tone=heron", upstream({}))).status, 400);
   assert.equal((await get("/constructor")).status, 404);
 });
+
+test("facet draws the name as the wordmark", async () => {
+  const body = await (await get("/crow?facet")).text();
+  assert.match(body, /aria-label="Crow"/);
+  assert.match(body, /viewBox="0 0 254.4 105"/);
+  assert.doesNotMatch(await (await get("/crow")).text(), /254.4/);
+});

@@ -52,8 +52,17 @@ def icon(project):
     }
 
 
+def wordmark(project):
+    source = (ROOT / "assets" / "wordmarks" / f"{project}.svg").read_text()
+    return {
+        "width": float(re.search(r'viewBox="0 0 ([\d.]+) 105"', source).group(1)),
+        "body": source.split(">", 1)[1].rsplit("</svg>", 1)[0].strip(),
+    }
+
+
 data = {
     "glyphs": {str(weight): glyphs(weight) for weight in WEIGHTS},
     "icons": {project: icon(project) for project in PROJECTS},
+    "wordmarks": {project: wordmark(project) for project in PROJECTS},
 }
 (ROOT / "src" / "data.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n")

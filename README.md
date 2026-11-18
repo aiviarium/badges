@@ -11,6 +11,7 @@ https://aiviarium-badges.helight.workers.dev/<project>/<shields.io path>
 | Badge | Address after the host |
 | --- | --- |
 | The project's name | `/hatchery` |
+| The project's name as its wordmark | `/hatchery?facet` |
 | Fixed text | `/hatchery/badge/state-in%20development-x` |
 | Latest release | `/hatchery/github/v/release/aiviarium/hatchery` |
 | CI | `/hatchery/github/actions/workflow/status/aiviarium/hatchery/ci.yml?label=CI` |
@@ -47,13 +48,13 @@ npx cf deploy     # needs a Cloudflare login: npx cf auth login
 | `src/index.js` | The routes, the request to shields.io and the cache |
 | `src/badge.js` | The drawing |
 | `src/data.json` | The outlines of the characters and the icons. `tools/build.py` writes it |
-| `assets/` | Inter with its license, and the icons |
+| `assets/` | Inter with its license, the icons and the wordmarks |
 | `cloudflare.config.ts` | The name and settings of the worker |
 
-Run `tools/build.py` after a change to an icon or the font. It needs Python with `fonttools` and `brotli`.
+Run `tools/build.py` after a change to an icon, a wordmark or the font. It needs Python with `fonttools` and `brotli`.
 
 The worker doesn't use credentials, and this repository doesn't store any.
 
 ## License
 
-The code is under either of [Apache-2.0](LICENSE-APACHE) or [MIT](LICENSE-MIT), at your option. Inter is under the [SIL Open Font License](assets/inter-OFL.txt).
+The code is under either of [Apache-2.0](LICENSE-APACHE) or [MIT](LICENSE-MIT), at your option. Inter is under the [SIL Open Font License](assets/inter-OFL.txt). The wordmarks are outlines of Bricolage Grotesque, which is under [the same license](assets/bricolage-grotesque-OFL.txt).
