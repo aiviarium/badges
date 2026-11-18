@@ -6,7 +6,7 @@ The badge endpoint of Aiviarium. It draws a badge in a project's colour, and tak
 https://aiviarium-badges.helight.workers.dev/<project>/<shields.io path>
 ```
 
-`<project>` is `aiviarium`, `rookery`, `parrot`, `crow` or `hatchery`. The rest is the address of a shields.io badge without `https://img.shields.io/`.
+`<project>` is `aiviarium`, `rookery`, `parrot`, `crow`, `hatchery` or `nocturne`. The rest is the address of a shields.io badge without `https://img.shields.io/`.
 
 | Badge | Address after the host |
 | --- | --- |
