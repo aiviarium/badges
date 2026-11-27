@@ -4,5 +4,7 @@
   "parrot": { "name": "Parrot", "colour": "#FF6369", "icon": "assets/icons/parrot-icon.svg", "wordmark": "assets/wordmarks/parrot.svg" },
   "crow": { "name": "Crow", "colour": "#8F8FFA", "icon": "assets/icons/crow-icon.svg", "wordmark": "assets/wordmarks/crow.svg" },
   "hatchery": { "name": "Hatchery", "colour": "#E879F9", "icon": "assets/icons/hatchery-icon.svg", "wordmark": "assets/wordmarks/hatchery.svg" },
+  "heron": { "name": "Heron", "colour": "#4FB6F2", "icon": "assets/icons/heron-icon.svg", "wordmark": "assets/wordmarks/heron.svg" },
+  "sparrow": { "name": "Sparrow", "colour": "#B5D94C", "icon": "assets/icons/sparrow-icon.svg", "wordmark": "assets/wordmarks/sparrow.svg" },
   "nocturne": { "name": "Nocturne", "colour": "#8F8FFA", "icon": "assets/icons/nocturne-icon.svg", "wordmark": "assets/wordmarks/nocturne.svg" }
 }

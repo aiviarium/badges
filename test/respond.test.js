@@ -100,8 +100,8 @@ test("text is escaped and cut", async () => {
 });
 
 test("an unknown project is refused", async () => {
-  assert.equal((await get("/heron")).status, 404);
-  assert.equal((await get("/crow/badge/a-b-x?tone=heron", upstream({}))).status, 400);
+  assert.equal((await get("/no-such-project")).status, 404);
+  assert.equal((await get("/crow/badge/a-b-x?tone=no-such-project", upstream({}))).status, 400);
   assert.equal((await get("/constructor")).status, 404);
 });
 
