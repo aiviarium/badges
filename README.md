@@ -6,27 +6,27 @@ The badge endpoint of Aiviarium. It draws a badge in a project's colour, and tak
 https://aiviarium-badges.helight.workers.dev/<project>/<shields.io path>
 ```
 
-`<project>` is `aiviarium`, `rookery`, `parrot`, `crow`, `hatchery` or `nocturne`. The rest is the address of a shields.io badge without `https://img.shields.io/`.
+`<project>` is `aiviarium`, `rookery`, `parrot`, `crow`, `hatchery`, `heron`, `sparrow` or `nocturne`. The rest is the address of a shields.io badge without `https://img.shields.io/`.
 
 | Badge | Address after the host |
 | --- | --- |
-| The project's name | `/hatchery` |
-| The project's name as its wordmark | `/hatchery?facet` |
-| Fixed text | `/hatchery/badge/state-in%20development-x` |
-| Latest release | `/hatchery/github/v/release/aiviarium/hatchery` |
-| CI | `/hatchery/github/actions/workflow/status/aiviarium/hatchery/ci.yml?label=CI` |
-| License | `/hatchery/github/license/aiviarium/hatchery` |
-| A value on another project's colour | `/aiviarium/badge/Aiviarium-Hatchery-x?tone=hatchery` |
-| A badge centred in a box 56 high, with 8 pixels of space on its left | `/hatchery/github/license/aiviarium/hatchery?height=56&gap=8` |
-| A Lucide icon | `/hatchery/github/license/aiviarium/hatchery?icon=lucide:scale` |
-| A brand logo from Simple Icons | `/hatchery/badge/rust-1.95-x?icon=si:rust` |
-| The name badge without its icon | `/hatchery?icon=none` |
-| A state chosen by hand | `/hatchery/badge/hosts-4%20online-x?state=success` |
+| The project's name | `/rookery` |
+| The project's name as its wordmark | `/rookery?facet` |
+| Fixed text | `/rookery/badge/state-in%20development-x` |
+| Latest release | `/rookery/github/v/release/aiviarium/rookery` |
+| CI | `/rookery/github/actions/workflow/status/aiviarium/rookery/ci.yml?label=CI` |
+| License | `/rookery/github/license/aiviarium/rookery` |
+| A value on another project's colour | `/aiviarium/badge/Aiviarium-Rookery-x?tone=rookery` |
+| A badge centred in a box 56 high, with 8 pixels of space on its left | `/rookery/github/license/aiviarium/rookery?height=56&gap=8` |
+| A Lucide icon | `/rookery/github/license/aiviarium/rookery?icon=lucide:scale` |
+| A brand logo from Simple Icons | `/rookery/badge/rust-1.95-x?icon=si:rust` |
+| The name badge without its icon | `/rookery?icon=none` |
+| A state chosen by hand | `/rookery/badge/hosts-4%20online-x?state=success` |
 
 In Markdown:
 
 ```markdown
-[![Release](https://aiviarium-badges.helight.workers.dev/hatchery/github/v/release/aiviarium/hatchery)](https://github.com/aiviarium/hatchery/releases)
+[![Release](https://aiviarium-badges.helight.workers.dev/rookery/github/v/release/aiviarium/rookery)](https://github.com/aiviarium/rookery/releases)
 ```
 
 ## Requests
